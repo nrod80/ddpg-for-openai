@@ -1,4 +1,4 @@
-# Stackathon-2016
+# DDPG for OpenAI Gym Environments
 In this casual four day hackathon: 
 
 - As a warm up, I created an extremely simple learning algorithm for the cartpole environment.
