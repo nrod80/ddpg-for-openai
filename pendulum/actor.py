@@ -15,7 +15,7 @@ class Actor:
         self.params = tf.trainable_variables()
         self.target_inputs, self.target_unscaled_outputs, self.target_outputs = self.createNetwork()
         self.target_params = tf.trainable_variables()[len(self.params):]
-        self.update_target_params = [ self.target_params[i].assign(tf.mul(self.params[i], self.temperature) + tf.mul(self.target_params[i], 1.0 - self.temperature)) for i in range(len(self.target_params)) ]
+        self.update_target_params = [ self.target_params[i].assign((self.params[i] * self.temperature) + (self.target_params[i] * (1.0 - self.temperature))) for i in range(len(self.target_params)) ]
         self.action_gradient = tf.placeholder(tf.float32, [None, self.action_size])
         self.actor_gradients = tf.gradients(self.outputs, self.params, -self.action_gradient)
         self.optimize = tf.train.AdamOptimizer(self.learning_rate).apply_gradients(zip(self.actor_gradients, self.params))
@@ -27,7 +27,7 @@ class Actor:
         net = tflearn.fully_connected(net, 300, activation='relu')
         weights_init = tflearn.initializations.uniform(minval=-0.003, maxval=0.003)
         unscaled_outputs = tflearn.fully_connected(net, self.action_size, activation='tanh', weights_init=weights_init)
-        outputs = tf.mul(unscaled_outputs, self.action_bounds)
+        outputs = (unscaled_outputs * self.action_bounds)
         return (inputs, unscaled_outputs, outputs)
 
     def train(self, inputs, action_gradient):

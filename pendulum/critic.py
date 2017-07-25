@@ -14,7 +14,7 @@ class Critic:
         self.params = tf.trainable_variables()[num_actor_vars:]
         self.target_inputs, self.target_action, self.target_outputs = self.createNetwork()
         self.target_params = tf.trainable_variables()[len(self.params) + num_actor_vars:]
-        self.update_target_params = [ self.target_params[i].assign(tf.mul(self.params[i], self.temperature) + tf.mul(self.target_params[i], 1.0 - self.temperature)) for i in range(len(self.target_params)) ]
+        self.update_target_params = [ self.target_params[i].assign((self.params[i] * self.temperature) + (self.target_params[i] * (1.0 - self.temperature))) for i in range(len(self.target_params)) ]
         self.predicted_q = tf.placeholder(tf.float32, [None, 1])
         self.loss = tflearn.mean_square(self.predicted_q, self.outputs)
         self.optimize = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss)
